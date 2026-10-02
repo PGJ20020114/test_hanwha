@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maritime SE Prompt Studio — NVIDIA Style</title>
+<style>
+:root{
+  --green:#76b900;--green-dark:#5a8d00;--black:#000;--white:#fff;
+  --soft:#f7f7f7;--hair:#ccc;--hair-strong:#5e5e5e;--body:#1a1a1a;
+  --mute:#757575;--ash:#a7a7a7;--error:#e52020;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;color:var(--body);background:var(--white);line-height:1.5}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.top{background:var(--black);color:var(--white);position:sticky;top:0;z-index:20;border-bottom:1px solid var(--hair-strong)}
+.nav{max-width:1280px;margin:auto;height:64px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:700}
+.square{width:12px;height:12px;background:var(--green);display:inline-block}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{height:44px;padding:11px 16px;border-radius:2px;border:1px solid var(--hair);background:#fff;color:#000;font-weight:700}
+.btn.primary{background:var(--green);border-color:var(--green);color:#000}
+.btn.primary:active{background:var(--green-dark)}
+.btn.outline{border:2px solid var(--green);background:transparent}
+.btn.dark-outline{border:1px solid #fff;background:transparent;color:#fff}
+.hero{background:#000;color:#fff}
+.hero-inner{max-width:1280px;margin:auto;padding:72px 24px;display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}
+.eyebrow{font-size:14px;font-weight:700;text-transform:uppercase;margin-bottom:16px;color:var(--green)}
+.hero h1{font-size:48px;line-height:1.25;margin:0 0 16px;font-weight:700}
+.hero p{font-size:20px;line-height:1.5;margin:0;color:rgba(255,255,255,.75);max-width:760px}
+.arch{border:1px solid var(--hair-strong);padding:24px;position:relative;background:#1a1a1a}
+.arch:before,.card:before{content:"";position:absolute;width:12px;height:12px;background:var(--green);top:-1px;left:-1px}
+.arch pre{white-space:pre-wrap;margin:0;color:#fff;font:14px/1.8 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.shell{max-width:1280px;margin:auto;padding:64px 24px}
+.layout{display:grid;grid-template-columns:minmax(0,.92fr) minmax(520px,1.08fr);gap:24px;align-items:start}
+.card{border:1px solid var(--hair);border-radius:2px;background:#fff;position:relative}
+.card-head{padding:18px 20px;border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-head h2{font-size:20px;margin:0;font-weight:700}
+.card-body{padding:24px}
+.sticky{position:sticky;top:88px}
+.section{padding:24px 0;border-top:1px solid var(--hair)}
+.section:first-child{border-top:0;padding-top:0}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px}
+.section-title h3{font-size:18px;margin:0}
+.section-title span{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--mute)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field label{display:block;font-size:14px;font-weight:700;margin-bottom:6px}
+input[type=text],input[type=search],select,textarea{width:100%;border:1px solid var(--hair);border-radius:2px;background:#fff;color:#000;padding:12px 14px;outline:none}
+input:focus,select:focus,textarea:focus{border:2px solid var(--green);padding:11px 13px}
+textarea{resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--hair);border-radius:2px;padding:8px 10px;display:inline-flex;align-items:center;gap:7px;font-size:14px;background:#fff;cursor:pointer}
+.chip:has(input:checked){background:#000;color:#fff;border-color:#000}
+.chip input{accent-color:var(--green)}
+.search-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:12px}
+.presets{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tab{border:1px solid var(--hair);border-radius:2px;background:#fff;padding:10px 18px;font-weight:700}
+.tab.active{background:#000;color:#fff;border-color:#000}
+.result{min-height:720px;font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#f7f7f7}
+.summary{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.badge{background:var(--soft);border:1px solid var(--hair);border-radius:2px;padding:4px 8px;font-size:12px;font-weight:700;text-transform:uppercase}
+.metrics{display:flex;justify-content:space-between;color:var(--mute);font-size:12px;margin-top:8px}
+.note{font-size:12px;color:var(--mute)}
+footer{background:#000;color:rgba(255,255,255,.7);padding:48px 24px;margin-top:64px}
+.footer-inner{max-width:1280px;margin:auto}
+@media(max-width:1050px){.hero-inner,.layout{grid-template-columns:1fr}.sticky{position:static}}
+@media(max-width:680px){.hero h1{font-size:32px}.shell{padding:32px 16px}.hero-inner{padding:48px 16px}.grid2,.presets{grid-template-columns:1fr}.nav{padding:0 16px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="nav">
+    <div class="brand"><span class="square"></span> Maritime SE Prompt Studio</div>
+    <div class="actions">
+      <button class="btn dark-outline" id="saveCfg">설정 저장</button>
+      <button class="btn primary" id="genTop">프롬프트 생성</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow">SYSTEMS ENGINEERING PROMPT BUILDER</div>
+      <h1>차세대 해양 무기체계<br>프롬프트 생성기</h1>
+      <p>Compact AESA, XLUUV, USV/UUV Swarm, AI Sensor Fusion, CMS, Autonomous Mission Management를 하나의 System-of-Systems 프롬프트로 조합합니다.</p>
+    </div>
+    <div class="arch"><pre>Sensor
+→ Communication Network
+→ AI Sensor Fusion
+→ Common Operational Picture
+→ CMS / Command & Control
+→ Autonomous Mission Management
+→ Manned & Unmanned Platforms</pre></div>
+  </div>
+</section>
+
+<main class="shell">
+  <div class="layout">
+    <section class="card">
+      <div class="card-head">
+        <h2>구성 요소</h2>
+        <div class="actions">
+          <button class="btn outline" id="coreBtn">핵심 선택</button>
+          <button class="btn" id="clearBtn">초기화</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="grid2">
+          <div class="field"><label>주제 / 제목</label><input id="title" type="text" value="차세대 해양 유·무인 복합전투체계"></div>
+          <div class="field"><label>목적</label>
+            <select id="purpose">
+              <option value="presentation">발표용 시스템 개념도</option>
+              <option value="cover">발표 표지</option>
+              <option value="architecture">SE 아키텍처 설명</option>
+              <option value="photoreal">실사형 기술 시연</option>
+              <option value="research">R&D 개념 시각화</option>
+            </select>
+          </div>
+        </div>
+        <div class="search-row">
+          <input id="search" type="search" placeholder="키워드 검색: AESA, XLUUV, Interface, Swarm...">
+          <button class="btn" id="clearSearch">지우기</button>
+        </div>
+        <div id="cats"></div>
+
+        <div class="section">
+          <div class="section-title"><h3>출력 옵션</h3><span>OUTPUT</span></div>
+          <div class="grid2">
+            <div class="field"><label>구도</label>
+              <select id="composition">
+                <option value="split">수상 45% / 수중 55%</option>
+                <option value="surface">수상 중심</option>
+                <option value="underwater">수중 중심</option>
+                <option value="diagram">아키텍처 중심</option>
+              </select>
+            </div>
+            <div class="field"><label>밀도</label>
+              <select id="density">
+                <option value="clean">깔끔한 발표형</option>
+                <option value="balanced" selected>균형형</option>
+                <option value="detailed">상세 기술형</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>USV 수량</label><select id="usvCount"><option>4~6대</option><option selected>6~8대</option><option>8~12대</option></select></div>
+            <div class="field"><label>UUV 수량</label><select id="uuvCount"><option>4~6대</option><option selected>6~10대</option><option>10~16대</option></select></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><h3>프리셋</h3><span>PRESET</span></div>
+          <div class="presets">
+            <button class="btn" data-preset="balanced">SE 균형형</button>
+            <button class="btn" data-preset="radar">레이더 중심</button>
+            <button class="btn" data-preset="autonomy">AI·군집</button>
+            <button class="btn" data-preset="underwater">잠수함·XLUUV</button>
+            <button class="btn" data-preset="architecture">아키텍처</button>
+            <button class="btn" data-preset="cover">표지형</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="field"><label>추가 요구사항</label><textarea id="extra" rows="4" placeholder="예: 좌측 상단 제목 여백 확보, XLUUV 강조"></textarea></div>
+          <div class="field"><label>추가 제외 요소</label><textarea id="negExtra" rows="3" placeholder="예: 특정 국가 표식, 과도한 무장"></textarea></div>
+          <div class="chips">
+            <label class="chip"><input id="includeArch" type="checkbox" checked> 계층 구조 포함</label>
+            <label class="chip"><input id="includeNeg" type="checkbox" checked> Negative Prompt</label>
+            <label class="chip"><input id="minimalText" type="checkbox" checked> 이미지 내 텍스트 최소화</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card sticky">
+      <div class="card-head">
+        <h2>프롬프트 결과</h2>
+        <div class="actions">
+          <button class="btn outline" id="copyBtn">복사</button>
+          <button class="btn primary" id="genBtn">생성</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="tabs">
+          <button class="tab active" data-mode="full">상세</button>
+          <button class="tab" data-mode="compact">압축</button>
+          <button class="tab" data-mode="keywords">키워드</button>
+        </div>
+        <div id="summary" class="summary"></div>
+        <textarea id="result" class="result" spellcheck="false"></textarea>
+        <div class="metrics"><span id="selCount">0개 선택</span><span id="chars">0자</span></div>
+        <div style="height:12px"></div>
+        <div class="actions">
+          <button class="btn" id="txtBtn">TXT</button>
+          <button class="btn" id="mdBtn">MD</button>
+          <button class="btn" id="jsonBtn">JSON</button>
+        </div>
+        <p class="note">도메인 구조는 해양 Systems Engineering, UI 디자인은 NVIDIA-inspired engineering style을 적용합니다.</p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer><div class="footer-inner">Maritime SE Prompt Studio · NVIDIA-inspired single-accent engineering UI</div></footer>
+
+<script>
+const DATA={"platform": ["대형 해양 플랫폼 / 무인체계 모함", "유인 잠수함", "XLUUV(초대형 무인잠수정)", "USV 군집", "UUV 군집", "진·회수 플랫폼"], "sensor": ["소형 해군용 AESA 레이더", "EO/IR 센서", "ESM / RF 센서", "소나 및 수중 음향센서", "분산형 레이더", "협동형 레이더", "Multistatic Radar", "MIMO Radar", "Cognitive Radar"], "radar": ["Digital Beamforming", "Electronic Beam Steering", "Adaptive Beamforming", "Track While Scan", "Multi-Target Tracking", "Sea Clutter Suppression", "Small RCS Target Detection", "Low-Altitude Target Detection", "Low-Flying UAV Detection", "Cooperative Detection", "Cooperative Tracking", "Radar Data Fusion", "SWaP-C Optimization"], "network": ["Line-of-Sight Data Link", "Maritime Mesh Network", "SATCOM", "Underwater Acoustic Communication", "Surface/Subsurface Network", "Tactical Edge Network", "Peer-to-Peer Communication", "Real-Time Data Sharing"], "ai": ["AI Sensor Fusion", "Multi-Sensor Fusion", "Common Operational Picture", "Combat Management System(CMS)", "Autonomous Mission Management", "AI-Assisted Decision Support", "Cooperative Autonomy", "Multi-Agent Coordination", "Swarm Coordination", "Distributed Autonomy"], "mission": ["ISR", "해상 감시", "수중 감시", "정찰", "표적 탐지", "표적 추적", "분산형 감시", "협동 감시", "지속 감시", "GPS-Denied Navigation", "Autonomous Docking"], "se": ["System-of-Systems", "Requirements Engineering", "System Architecture", "Functional Decomposition", "Logical Architecture", "Physical Architecture", "Interface Management", "System Integration", "Integration Verification", "Verification & Validation", "Trade-Off Analysis", "Risk Management", "Configuration Management", "Interoperability", "Modular / Open Architecture"], "flow": ["Sensor Data Flow", "Command and Control Flow", "Mission Data Exchange", "Sensor-to-Fusion", "Fusion-to-CMS", "CMS-to-Platform", "Machine-to-Machine Communication", "Shared Situational Awareness"], "visual": ["Physically Plausible", "Operationally Credible", "Realistic Naval Engineering", "Realistic Scale", "Engineering Documentary Style", "Restrained Technical Visualization", "Physically Based Rendering", "Subtle HUD Overlay", "Post-Production Overlay", "Realistic Ocean Physics", "Overcast Maritime Lighting"]};
+const LABELS={"platform": ["플랫폼", "PLATFORM"], "sensor": ["센서", "SENSOR"], "radar": ["레이더 기술", "RADAR"], "network": ["통신 / 네트워크", "NETWORK"], "ai": ["AI / CMS / 자율화", "AI & C2"], "mission": ["임무", "MISSION"], "se": ["Systems Engineering", "SE"], "flow": ["정보 흐름", "DATA FLOW"], "visual": ["시각 스타일", "VISUAL"]};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let mode="full";
+
+function render(){
+  const root=$("#cats"); root.innerHTML="";
+  Object.entries(DATA).forEach(([k,items])=>{
+    const sec=document.createElement("div"); sec.className="section kw-section";
+    sec.innerHTML=`<div class="section-title"><h3>${LABELS[k][0]}</h3><span>${LABELS[k][1]}</span></div>
+      <div class="chips">${items.map(v=>`<label class="chip kw-chip" data-search="${v.toLowerCase()}"><input type="checkbox" data-group="${k}" value="${v}"><span>${v}</span></label>`).join("")}</div>`;
+    root.appendChild(sec);
+  });
+}
+
+function selected(g){return $$(`input[data-group="${g}"]:checked`).map(x=>x.value)}
+function allSel(){const o={};Object.keys(DATA).forEach(k=>o[k]=selected(k));return o}
+function bullet(a){return a.length?a.map(x=>"- "+x).join("\n"):"- 선택 없음"}
+function has(g,t){return selected(g).some(x=>x.includes(t))}
+function purpose(v){return {presentation:"발표용 고급 시스템 엔지니어링 컨셉 이미지",cover:"전문적인 방산 기술 발표 표지",architecture:"Systems Engineering 아키텍처 설명용 인포그래픽",photoreal:"실사형 해군 기술 시연 이미지",research:"차세대 해양 무인체계 R&D 개념 시각화"}[v]}
+function comp(v){return {split:"16:9 수상/수중 반단면 구도. 수상 45%, 수중 55% 비율.",surface:"16:9 수상 중심 구도.",underwater:"16:9 수중 중심 구도.",diagram:"16:9 아키텍처 중심 구도. 인터페이스와 정보 흐름을 우선."}[v]}
+
+function fullPrompt(){
+  const S=allSel(); let p=`# ${$("#title").value} — 이미지 생성 프롬프트
+
+${purpose($("#purpose").value)}를 생성한다.
+
+핵심 목표는 미래형 군사 장면의 화려함이 아니라, 플랫폼·센서·통신 네트워크·AI 센서융합·CMS·자율 임무관리·유무인 플랫폼이 하나의 System-of-Systems로 통합되는 구조를 명확하게 보여주는 것이다.
+
+## 1. 전체 구도
+${comp($("#composition").value)}
+
+선택 플랫폼:
+${bullet(S.platform)}
+
+`;
+  if(has("platform","대형 해양 플랫폼")) p+=`중앙 또는 핵심 영역에 대형 해양 플랫폼/무인체계 모함을 배치한다. 현대 해군 지원함 또는 임무지원함 기반의 현실적인 형상으로 표현한다.\n\n`;
+  if(has("platform","USV")) p+=`약 ${$("#usvCount").value}의 USV를 분산 군집으로 배치하며, 소형 AESA 및 선택 센서를 안정화 센서 마스트에 통합한다.\n\n`;
+  if(has("platform","XLUUV")) p+=`XLUUV는 긴 원통형 유체역학 선체, 모듈형 임무 탑재부, 제어핀, 현실적인 추진계 구성을 갖춘다.\n\n`;
+  if(has("platform","UUV")) p+=`약 ${$("#uuvCount").value}의 UUV가 협동 군집으로 운용되며 수중 감시·정찰·센싱 임무를 수행한다.\n\n`;
+
+  p+=`## 2. 센서 / 레이더
+${bullet(S.sensor)}
+
+레이더 기술:
+${bullet(S.radar)}
+
+센서들은 독립 장비가 아니라 플랫폼에 통합된 서브시스템으로 표현한다. AESA, EO/IR, ESM, Sonar 정보가 AI Sensor Fusion으로 수렴하게 한다.
+`;
+
+  if(has("sensor","분산형")||has("sensor","협동형")||has("sensor","Multistatic")||has("sensor","MIMO")) p+=`USV의 레이더 노드들이 Cooperative / Distributed / Multistatic 방식으로 연계되는 분산형 센서 네트워크를 표현한다.\n`;
+
+  p+=`
+## 3. 네트워크
+${bullet(S.network)}
+
+수상 플랫폼은 Maritime Mesh / LOS Data Link, 수중 플랫폼은 Underwater Acoustic Communication, 장거리 연결은 SATCOM을 사용한다.
+
+## 4. AI / CMS / 자율화
+${bullet(S.ai)}
+
+AI Sensor Fusion → Common Operational Picture → CMS → Autonomous Mission Management 순으로 정보와 의사결정이 흐르도록 한다.
+
+## 5. 임무
+${bullet(S.mission)}
+
+## 6. 정보 흐름
+${bullet(S.flow)}
+
+`;
+  if($("#includeArch").checked) p+=`전체 계층 구조:
+Sensor → Communication Network → AI Sensor Fusion → Common Operational Picture → CMS / Command & Control → Autonomous Mission Management → USV / UUV / XLUUV / Submarine / Mothership
+
+`;
+
+  p+=`## 7. Systems Engineering
+${bullet(S.se)}
+
+플랫폼 외형보다 서브시스템 관계, 기능 할당, 인터페이스, 데이터 흐름, 논리/물리 아키텍처, 체계 통합 구조를 우선해서 보여준다.
+
+## 8. 시각 스타일
+${bullet(S.visual)}
+
+현실적인 해양 환경, 정확한 크기 관계, Naval Gray / Dark Navy / Charcoal / Muted Blue-Gray 계열, 절제된 기술 오버레이를 사용한다.
+HUD는 실제 공간의 홀로그램이 아니라 후처리 엔지니어링 그래픽처럼 표현한다.
+`;
+
+  if($("#density").value==="clean") p+=`발표 슬라이드 가독성을 위해 핵심 연결 관계만 남기고 정보량을 절제한다.\n`;
+  if($("#density").value==="detailed") p+=`센서·네트워크·AI/CMS·플랫폼 계층의 세부 연결을 더 풍부하게 표현하되 화면 과밀은 피한다.\n`;
+  if($("#purpose").value==="cover") p+=`발표 제목 공간을 확보하고, 주요 플랫폼을 중앙과 우측에 집중 배치한다.\n`;
+  if($("#purpose").value==="architecture") p+=`실사형 3D 렌더와 Systems Engineering Architecture Diagram의 중간 형태로 표현한다.\n`;
+  if($("#purpose").value==="photoreal") p+=`실제 해군 기술시연 사진 같은 카메라 원근감, 해무, 바다 물보라, 절제된 피사계 심도를 사용한다.\n`;
+  if($("#minimalText").checked) p+=`이미지 내부 텍스트는 최소화한다.\n`;
+
+  const ex=$("#extra").value.trim(); if(ex) p+=`\n## 9. 추가 요구사항\n${ex}\n`;
+  if($("#includeNeg").checked){
+    p+=`\n## 10. Negative Prompt
+- SF 우주선 스타일
+- Neon / Cyberpunk
+- 과도한 홀로그램
+- 발광하는 선체
+- 비현실적 추진장치
+- 과도하게 큰 무장
+- 미사일 발사와 폭발
+- 영화 포스터식 전투 장면
+- 과밀한 HUD
+- 기업 / 제조사 로고
+`;
+    const nx=$("#negExtra").value.trim(); if(nx) p+=nx.split("\n").map(x=>"- "+x).join("\n")+"\n";
+  }
+  return p;
+}
+
+function compactPrompt(){
+  const S=allSel(); const flat=Object.values(S).flat().join(", ");
+  return `${purpose($("#purpose").value)}. 주제: ${$("#title").value}. ${comp($("#composition").value)} 핵심 요소: ${flat}. Sensor → Network → AI Sensor Fusion → COP → CMS → Autonomous Mission Management → Manned/Unmanned Platforms 구조로 표현한다. 시스템 인터페이스와 데이터 흐름을 SE 관점에서 명확히 보여주고, 현실적인 해군 공학, 절제된 HUD, 후처리형 기술 오버레이를 사용한다. SF, 네온, 과도한 홀로그램, 폭발, 영화 포스터식 구도는 제외한다.`;
+}
+function keywordPrompt(){const S=allSel(); return Object.entries(S).map(([k,v])=>`## ${LABELS[k][0]}\n${bullet(v)}`).join("\n\n")}
+
+function update(){
+  const t=mode==="compact"?compactPrompt():mode==="keywords"?keywordPrompt():fullPrompt();
+  $("#result").value=t;
+  $("#selCount").textContent=$$('input[data-group]:checked').length+"개 선택";
+  $("#chars").textContent=t.length.toLocaleString()+"자";
+  $("#summary").innerHTML=Object.entries(allSel()).filter(([,v])=>v.length).map(([k,v])=>`<span class="badge">${LABELS[k][1]} ${v.length}</span>`).join("");
+}
+
+const core={
+platform:["대형 해양 플랫폼 / 무인체계 모함","유인 잠수함","XLUUV(초대형 무인잠수정)","USV 군집","UUV 군집"],
+sensor:["소형 해군용 AESA 레이더","EO/IR 센서","ESM / RF 센서","소나 및 수중 음향센서"],
+radar:["Sea Clutter Suppression","Small RCS Target Detection","Low-Altitude Target Detection"],
+network:["Line-of-Sight Data Link","Maritime Mesh Network","SATCOM","Underwater Acoustic Communication"],
+ai:["AI Sensor Fusion","Common Operational Picture","Combat Management System(CMS)","Autonomous Mission Management","Cooperative Autonomy"],
+mission:["ISR","해상 감시","수중 감시","분산형 감시"],
+se:["System-of-Systems","System Architecture","Interface Management","System Integration","Verification & Validation"],
+flow:["Sensor Data Flow","Command and Control Flow","Mission Data Exchange"],
+visual:["Physically Plausible","Operationally Credible","Realistic Naval Engineering","Engineering Documentary Style","Restrained Technical Visualization"]
+};
+function setMap(m){$$('input[data-group]').forEach(x=>x.checked=false);Object.entries(m).forEach(([g,vals])=>vals.forEach(v=>{const el=$$(`input[data-group="${g}"]`).find(x=>x.value===v);if(el)el.checked=true;}));update()}
+function applyCore(){setMap(core)}
+
+const presets={
+balanced:applyCore,
+radar:()=>{applyCore();["분산형 레이더","협동형 레이더","Multistatic Radar","Cognitive Radar"].forEach(v=>{const el=$$('input[data-group="sensor"]').find(x=>x.value===v);if(el)el.checked=true;});["Digital Beamforming","Adaptive Beamforming","Cooperative Detection","Cooperative Tracking","Radar Data Fusion","SWaP-C Optimization"].forEach(v=>{const el=$$('input[data-group="radar"]').find(x=>x.value===v);if(el)el.checked=true;});$("#title").value="소형 AESA 및 분산형 레이더 기반 차세대 해양 무인전투체계";update();},
+autonomy:()=>{applyCore();$$('input[data-group="ai"]').forEach(x=>x.checked=true);$("#title").value="AI·군집 자율화 기반 해양 유·무인 복합전투체계";update();},
+underwater:()=>{applyCore();$$('input[data-group="platform"]').forEach(x=>x.checked=["대형 해양 플랫폼 / 무인체계 모함","유인 잠수함","XLUUV(초대형 무인잠수정)","UUV 군집"].includes(x.value));$("#composition").value="underwater";$("#title").value="잠수함·XLUUV·UUV 통합 수중 System-of-Systems";update();},
+architecture:()=>{applyCore();$$('input[data-group="se"]').forEach(x=>x.checked=true);$$('input[data-group="flow"]').forEach(x=>x.checked=true);$("#purpose").value="architecture";$("#composition").value="diagram";update();},
+cover:()=>{applyCore();$("#purpose").value="cover";$("#density").value="clean";update();}
+};
+
+function download(name,text,type="text/plain"){const b=new Blob([text],{type:type+";charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+
+render(); applyCore();
+$("#search").addEventListener("input",e=>{const q=e.target.value.toLowerCase();$$(".kw-chip").forEach(ch=>ch.style.display=!q||ch.dataset.search.includes(q)?"inline-flex":"none");});
+$("#clearSearch").onclick=()=>{$("#search").value="";$("#search").dispatchEvent(new Event("input"));};
+$("#coreBtn").onclick=applyCore; $("#clearBtn").onclick=()=>{$$('input[data-group]').forEach(x=>x.checked=false);update();};
+$("#genBtn").onclick=update; $("#genTop").onclick=update;
+$("#copyBtn").onclick=async()=>{await navigator.clipboard.writeText($("#result").value);$("#copyBtn").textContent="복사 완료";setTimeout(()=>$("#copyBtn").textContent="복사",1000)};
+$("#txtBtn").onclick=()=>download("maritime-se-prompt-nvidia.txt",$("#result").value);
+$("#mdBtn").onclick=()=>download("maritime-se-prompt-nvidia.md",$("#result").value,"text/markdown");
+$("#jsonBtn").onclick=()=>download("maritime-se-prompt-nvidia.json",JSON.stringify({title:$("#title").value,purpose:$("#purpose").value,selected:allSel(),prompt:$("#result").value},null,2),"application/json");
+$("#saveCfg").onclick=()=>{localStorage.setItem("maritimeNvidiaCfg",JSON.stringify({title:$("#title").value,purpose:$("#purpose").value,composition:$("#composition").value,density:$("#density").value,selected:allSel()}));$("#saveCfg").textContent="저장 완료";setTimeout(()=>$("#saveCfg").textContent="설정 저장",1000)};
+$$("[data-preset]").forEach(b=>b.onclick=()=>presets[b.dataset.preset]());
+$$(".tab").forEach(t=>t.onclick=()=>{$$(".tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");mode=t.dataset.mode;update();});
+document.addEventListener("change",e=>{if(e.target.matches("input,select,textarea"))update()});
+document.addEventListener("input",e=>{if(["title","extra","negExtra"].includes(e.target.id))update()});
+update();
+</script>
+</body>
+</html>
